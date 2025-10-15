@@ -1880,6 +1880,16 @@ RUN if [ ${INSTALL_GITHUB_CLI} = true ]; then \
 ;fi
 
 
+###########################################################################
+# Install wkhtmltopdf 0.12.6 (with patched Qt)
+###########################################################################
+
+RUN apt-get update && \
+    apt-get install -y wget xfonts-75dpi fontconfig libfontconfig1 libx11-dev && \
+    wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb && \
+    dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb || apt-get -f install -y && \
+    rm wkhtmltox_0.12.6.1-2.jammy_amd64.deb
+
 #
 #--------------------------------------------------------------------------
 # Final Touch
@@ -1895,3 +1905,4 @@ RUN apt-get clean && \
 
 # Set default work directory
 WORKDIR /var/www
+

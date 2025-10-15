@@ -6,8 +6,6 @@ networks:
 volumes:
   mysql:
     driver: ${VOLUMES_DRIVER}
-  mysql_data:
-    driver: local
   percona:
     driver: ${VOLUMES_DRIVER}
   mssql:
@@ -191,12 +189,12 @@ services:
           - https_proxy
           - no_proxy
       volumes:
-        - ./../projects:/var/www
-        - /var/run/docker.sock:/var/run/docker.sock
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - docker-in-docker:/certs/client
         - ./php-worker/supervisord.d:/etc/supervisord.d
-        - /home/mitchell/projects/big_storage:/var/www/big_storage
+        - /var/www/big_storage:/var/www/big_storage
+        - /var/www/big_storage/planiteasy:/var/www/big_storage/planiteasy
+        - /mnt/c/development/big_storage:/var/www/big_storage
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
@@ -542,7 +540,8 @@ services:
         - ${APACHE_HOST_LOG_PATH}:/var/log/apache2
         - ${APACHE_SITES_PATH}:/etc/apache2/sites-available
         - ${APACHE_SSL_PATH}:/etc/apache2/ssl
-        - /home/mitchell/projects/big_storage:/var/www/big_storage
+        - /var/www/big_storage:/var/www/big_storage
+        - /var/www/big_storage/planiteasy:/var/www/big_storage/planiteasy
       ports:
         - "${APACHE_HOST_HTTP_PORT}:80"
         - "${APACHE_HOST_HTTPS_PORT}:443"
@@ -597,10 +596,10 @@ services:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - TZ=${WORKSPACE_TIMEZONE}
       volumes:
-        - mysql_data:/var/lib/mysql              # ✅ Named volume instead of host mount
+        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
         - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
       ports:
-        - "3307:3306"
+        - "${MYSQL_PORT}:3306"
       networks:
         - backend
 
