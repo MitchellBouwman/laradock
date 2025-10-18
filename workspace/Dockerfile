@@ -1514,6 +1514,7 @@ ARG WKHTMLTOPDF_VERSION=0.12.6-1
 
 RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
    ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+   && apt-get update \
    && apt-get install -y \
    libxrender1 \
    libfontconfig1 \
@@ -1525,9 +1526,12 @@ RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
    xfonts-base \
    xfonts-75dpi \
    wget \
+   && wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
+   && dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
    && wget "https://github.com/wkhtmltopdf/packaging/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox_${WKHTMLTOPDF_VERSION}.focal_${ARCH}.deb" \
    && dpkg -i "wkhtmltox_${WKHTMLTOPDF_VERSION}.focal_${ARCH}.deb" \
-   && apt -f install \
+   && apt-get -f install -y \
+   && rm -f libssl1.1_1.1.1f-1ubuntu2_amd64.deb "wkhtmltox_${WKHTMLTOPDF_VERSION}.focal_${ARCH}.deb" \
 ;fi
 
 ###########################################################################
@@ -1880,15 +1884,6 @@ RUN if [ ${INSTALL_GITHUB_CLI} = true ]; then \
 ;fi
 
 
-###########################################################################
-# Install wkhtmltopdf 0.12.6 (with patched Qt)
-###########################################################################
-
-RUN apt-get update && \
-    apt-get install -y wget xfonts-75dpi fontconfig libfontconfig1 libx11-dev && \
-    wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb && \
-    dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb || apt-get -f install -y && \
-    rm wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 
 #
 #--------------------------------------------------------------------------
