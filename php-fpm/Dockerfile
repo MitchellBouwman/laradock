@@ -1075,6 +1075,7 @@ ARG WKHTMLTOPDF_VERSION=0.12.6.1-3
 
 RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
     ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+    && apt-get update \
     && apt-get install -yqq \
       libxrender1 \
       libfontconfig1 \
@@ -1086,7 +1087,8 @@ RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
       xfonts-base \
       xfonts-75dpi \
       wget \
-    # && cat /etc/os-release \
+    && wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
+    && dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
     && if [ ${LARADOCK_PHP_VERSION} = "5.6" ] || \
         [ ${LARADOCK_PHP_VERSION} = "7.0" ]; then \
       wget "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.stretch_${ARCH}.deb"; \
@@ -1104,6 +1106,8 @@ RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
       wget "https://github.com/wkhtmltopdf/packaging/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox_${WKHTMLTOPDF_VERSION}.bookworm_${ARCH}.deb"; \
       dpkg -i "wkhtmltox_${WKHTMLTOPDF_VERSION}.bookworm_${ARCH}.deb"; \
     fi \
+    && apt-get -f install -y \
+    && rm -f libssl1.1_1.1.1f-1ubuntu2_amd64.deb wkhtmltox*.deb \
 ;fi
 
 #####################################
